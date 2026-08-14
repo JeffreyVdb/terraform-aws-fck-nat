@@ -5,6 +5,15 @@ locals {
   cwagent_param_name = var.use_cloudwatch_agent ? var.cloudwatch_agent_configuration_param_arn != null ? split("/", data.aws_arn.ssm_param[0].resource)[1] : aws_ssm_parameter.cloudwatch_agent_config[0].name : null
   security_groups    = concat(var.use_default_security_group ? [aws_security_group.main.id] : [], var.additional_security_group_ids)
   instance_name      = lookup(var.tags, "Name", var.name)
+  vpc_ipv4_cidr_blocks = var.vpc_ipv4_cidr_blocks != null ? var.vpc_ipv4_cidr_blocks : {
+    for cidr_block in data.aws_vpc.main.cidr_block_associations[*].cidr_block :
+    cidr_block => cidr_block
+  }
+  vpc_ipv6_cidr_blocks = var.vpc_ipv6_cidr_blocks != null ? var.vpc_ipv6_cidr_blocks : (
+    var.use_nat64 && data.aws_vpc.main.ipv6_cidr_block != "" ? {
+      (data.aws_vpc.main.ipv6_cidr_block) = data.aws_vpc.main.ipv6_cidr_block
+    } : {}
+  )
 }
 
 data "aws_region" "current" {}
@@ -23,7 +32,7 @@ resource "aws_security_group" "main" {
 }
 
 resource "aws_vpc_security_group_ingress_rule" "vpc" {
-  for_each = toset(data.aws_vpc.main.cidr_block_associations[*].cidr_block)
+  for_each = local.vpc_ipv4_cidr_blocks
 
   security_group_id = aws_security_group.main.id
   description       = "Unrestricted ingress from within VPC"
@@ -34,7 +43,7 @@ resource "aws_vpc_security_group_ingress_rule" "vpc" {
 }
 
 resource "aws_vpc_security_group_ingress_rule" "vpc_ipv6" {
-  for_each = var.use_nat64 && data.aws_vpc.main.ipv6_cidr_block != "" ? toset([data.aws_vpc.main.ipv6_cidr_block]) : toset([])
+  for_each = var.use_nat64 ? local.vpc_ipv6_cidr_blocks : {}
 
   security_group_id = aws_security_group.main.id
   description       = "Unrestricted IPv6 ingress from within VPC"
