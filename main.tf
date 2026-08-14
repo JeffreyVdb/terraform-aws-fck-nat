@@ -10,10 +10,8 @@ locals {
     cidr_block => cidr_block
   }
   vpc_ipv6_cidr_blocks = var.vpc_ipv6_cidr_blocks != null ? var.vpc_ipv6_cidr_blocks : (
-    var.use_nat64 ? {
-      for association in data.aws_vpc.main.ipv6_cidr_block_associations :
-      association.ipv6_cidr_block => association.ipv6_cidr_block
-      if association.state == "associated"
+    var.use_nat64 && data.aws_vpc.main.ipv6_cidr_block != "" ? {
+      (data.aws_vpc.main.ipv6_cidr_block) = data.aws_vpc.main.ipv6_cidr_block
     } : {}
   )
 }
