@@ -8,6 +8,18 @@ variable "vpc_id" {
   type        = string
 }
 
+variable "vpc_ipv4_cidr_blocks" {
+  description = "Optional statically keyed map of IPv4 CIDR blocks allowed to use the NAT instance. Defaults to CIDR blocks discovered from the VPC."
+  type        = map(string)
+  default     = null
+}
+
+variable "vpc_ipv6_cidr_blocks" {
+  description = "Optional statically keyed map of IPv6 CIDR blocks allowed to use NAT64. Defaults to the IPv6 CIDR block discovered from the VPC."
+  type        = map(string)
+  default     = null
+}
+
 variable "subnet_id" {
   description = "Subnet ID to deploy the NAT instance into"
   type        = string
