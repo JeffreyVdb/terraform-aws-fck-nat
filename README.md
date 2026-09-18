@@ -108,8 +108,6 @@ module "fck-nat" {
 | <a name="input_use_spot_instances"></a> [use\_spot\_instances](#input\_use\_spot\_instances) | Whether or not to use spot instances for running the NAT instance | `bool` | `false` | no |
 | <a name="input_use_ssh"></a> [use\_ssh](#input\_use\_ssh) | Whether or not to enable SSH access to the NAT instance | `bool` | `false` | no |
 | <a name="input_vpc_id"></a> [vpc\_id](#input\_vpc\_id) | VPC ID to deploy the NAT instance into | `string` | n/a | yes |
-| <a name="input_vpc_ipv4_cidr_blocks"></a> [vpc\_ipv4\_cidr\_blocks](#input\_vpc\_ipv4\_cidr\_blocks) | Optional statically keyed map of IPv4 CIDR blocks allowed to use the NAT instance. Defaults to CIDR blocks discovered from the VPC. | `map(string)` | `null` | no |
-| <a name="input_vpc_ipv6_cidr_blocks"></a> [vpc\_ipv6\_cidr\_blocks](#input\_vpc\_ipv6\_cidr\_blocks) | Optional statically keyed map of IPv6 CIDR blocks allowed to use NAT64. Defaults to the IPv6 CIDR block discovered from the VPC. | `map(string)` | `null` | no |
 
 ## Outputs
 

@@ -14,18 +14,6 @@ variable "vpc_id" {
   type        = string
 }
 
-variable "vpc_ipv4_cidr_blocks" {
-  description = "Optional statically keyed map of IPv4 CIDR blocks allowed to use the NAT instance. Defaults to CIDR blocks discovered from the VPC."
-  type        = map(string)
-  default     = null
-}
-
-variable "vpc_ipv6_cidr_blocks" {
-  description = "Optional statically keyed map of IPv6 CIDR blocks allowed to use NAT64. Defaults to the IPv6 CIDR block discovered from the VPC."
-  type        = map(string)
-  default     = null
-}
-
 variable "subnet_id" {
   description = "Subnet ID to deploy the NAT instance into"
   type        = string
@@ -51,6 +39,12 @@ variable "route_table_id" {
 
 variable "route_tables_ids" {
   description = "Route tables to update. Only valid if update_route_tables is true"
+  type        = map(string)
+  default     = {}
+}
+
+variable "route_tables6_ids" {
+  description = "Route tables to update for IPv6. Only valid if update_route_tables and use_nat64 are true"
   type        = map(string)
   default     = {}
 }
@@ -132,12 +126,6 @@ variable "use_spot_instances" {
   default     = false
 }
 
-variable "use_nat64" {
-  description = "Whether or not to enable NAT64 support. When enabled, uses the fck-nat NAT64 AMI variant, adds a 64:ff9b::/96 route, and allows IPv6 VPC ingress"
-  type        = bool
-  default     = false
-}
-
 variable "use_cloudwatch_agent" {
   description = "Whether or not to enable CloudWatch agent for the NAT instance"
   type        = bool
@@ -174,6 +162,12 @@ variable "additional_security_group_ids" {
   description = "A list of identifiers of security groups to be added for the NAT instance"
   type        = list(string)
   default     = []
+}
+
+variable "use_nat64" {
+  description = "Whether or not to enable NAT64 on the NAT instance. Your VPC and at least the public subnet this NAT instance is deployed into must support IPv6"
+  type        = bool
+  default     = false
 }
 
 variable "use_ssh" {
