@@ -1,5 +1,20 @@
 # Terraform fck-nat
 
+> **Fork notice (JeffreyVdb/terraform-aws-fck-nat).** This fork tracks
+> [RaJiska/terraform-aws-fck-nat](https://github.com/RaJiska/terraform-aws-fck-nat)
+> and differs on purpose in these blocks of `main.tf` only:
+>
+> - security group rules are standalone `aws_vpc_security_group_*_rule`
+>   resources (per-rule tags, zero rewrites of the group on change);
+> - `vpc_ipv4_cidr_blocks` / `vpc_ipv6_cidr_blocks` accept statically keyed
+>   maps so `for_each` works when the VPC is created in the same apply;
+> - the NAT64 route is `aws_route.nat64` keyed on `route_tables_ids`
+>   (`route_tables6_ids` / `aws_route.main_ipv6` are not carried);
+> - the VPC IPv6 CIDR is discovered via `ipv6_cidr_block_associations`
+>   (AWS provider >= 6.59).
+>
+> Sync with `git merge upstream/main`; expect conflicts only in those blocks.
+
 ## Introduction
 
 A Terraform module for deploying NAT Instances using [fck-nat](https://github.com/AndrewGuenther/fck-nat). The (f)easible (c)ost (k)onfigurable NAT!
