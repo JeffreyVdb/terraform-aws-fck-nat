@@ -3,6 +3,12 @@ variable "name" {
   type        = string
 }
 
+variable "region" {
+  description = "Region in which to create resources, defaults to provider region if not set"
+  type        = string
+  default     = null
+}
+
 variable "vpc_id" {
   description = "VPC ID to deploy the NAT instance into"
   type        = string
@@ -67,10 +73,27 @@ variable "ha_mode" {
   default     = true
 }
 
+variable "auto_rollout" {
+  description = "Whether to automatically rollout configuration changes to the launch template (like AMI and cloud init)"
+  type        = bool
+  default     = false
+}
+
 variable "instance_type" {
   description = "Instance type to use for the NAT instance"
   type        = string
   default     = "t4g.micro"
+}
+
+variable "ha_additional_instance_types" {
+  description = "List of additional instance types to pass to the ASG, helpful when using spot instances with low availabiltiy"
+  type        = list(string)
+  default     = []
+
+  validation {
+    condition     = var.ha_mode || (!var.ha_mode && length(var.ha_additional_instance_types) == 0)
+    error_message = "You must set ha_mode to true to use multiple instance types."
+  }
 }
 
 variable "ami_id" {
@@ -175,6 +198,12 @@ variable "ssh_cidr_blocks" {
     ipv4 = [],
     ipv6 = []
   }
+}
+
+variable "permissions_boundary_arn" {
+  description = "ARN of the IAM policy to use as a permissions boundary for the NAT instance IAM role"
+  type        = string
+  default     = null
 }
 
 variable "tags" {
